@@ -25,8 +25,11 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Make shinylive deployment in site
-        run: uv run shinylive export abloc site
+      - name: Install shinylive
+        run: pip install shinylive
+
+      - name: Make shinylive deployment in site/
+        run: shinylive export abloc site
 
       - name: Upload website artifact
         if: github.ref == 'refs/heads/main'
