@@ -40,10 +40,9 @@ jobs:
         run: shinylive export abloc site
 
       - name: Upload website artifact
-        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "abloc/site/"
+          path: "site/"
 
       - name: Deploy to GitHub Pages
         id: deployment
