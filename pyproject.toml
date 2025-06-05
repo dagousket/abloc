@@ -5,6 +5,7 @@ description = "Find whether you're gonna run out of air."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "certifi>=2025.4.26",
     "plotly>=6.1.2",
     "polars>=1.30.0",
     "pyarrow>=20.0.0",
