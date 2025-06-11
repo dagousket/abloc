@@ -1,13 +1,10 @@
 # Deploy branch is followed by Posit Connect
-name: Update Requirements on Deploy Branch
+name: Update Requirements and Manifest files
 
 on:
   push:
     branches:
       - main # Trigger when pushing to main
-  pull_request:
-    branches:
-      - main # Trigger on pull requests to main
 
 permissions:
   contents: write
@@ -16,9 +13,9 @@ permissions:
 
 jobs:
   build:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # environment:
+    #   name: github-pages
+    #   url: ${{ steps.deployment.outputs.page_url }}
     env:
       UV_SYSTEM_PYTHON: true
     runs-on: ubuntu-latest
@@ -33,17 +30,32 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Install shinylive
-        run: pip install shinylive
+      - name: Generate requirements.txt with `uv`
+        run: uv export --no-hashes -o abloc/requirements.txt
 
-      - name: Make shinylive deployment in site/
-        run: shinylive export abloc site
+      - name: Generate rsconnect-python manifest.json
+        run: rsconnect write-manifest shiny abloc --entrypoint abloc.app:app --overwrite
 
-      - name: Upload website artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "site/"
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add abloc/requirements.txt manifest.json
+          git commit -m "Update requirements on new commit from main" || echo "No changes to commit"
+          git push origin main
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Uncomment the following lines to enable shinylive deployment
+      # - name: Install shinylive
+      #   run: pip install shinylive
+
+      # - name: Make shinylive deployment in site/
+      #   run: shinylive export abloc site
+
+      # - name: Upload website artifact
+      #   uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: "site/"
+
+      # - name: Deploy to GitHub Pages
+      #   id: deployment
+      #   uses: actions/deploy-pages@v4
