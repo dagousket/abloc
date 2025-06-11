@@ -41,7 +41,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add abloc/requirements.txt abloc/manifest.json
-          git commit -m "Update requirements on new commit from main" || echo "No changes to commit"
+          git commit -m ":wrench: ci: update requirements and manifest files" || echo "No changes to commit"
           git push origin main
 
       # Uncomment the following lines to enable shinylive deployment
