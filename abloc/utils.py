@@ -1,6 +1,35 @@
 import polars as pl
 
 
+class DiveProfile:
+
+    def __init__(self, time: list[float], depth: list[float], conso: float = 20.0):
+        """
+        Initialize a DiveProfile instance.
+        Parameters:
+        - time: Time in minutes.
+        - depth: Depth in meters.
+        - conso: Consumption rate in liters per minute (default is 20.0).
+        """
+        profile = pl.DataFrame(
+            {
+                "time": time,  # (minutes),
+                "depth": depth,  # (meters)
+            }
+        )
+        self.profile = compute_conso_from_profile(profile, conso)
+
+    @property
+    def total_conso(self) -> float:
+        """
+        Compute the total air consumption from the dive profile.
+
+        Returns:
+        - Total air consumption in liters.
+        """
+        return get_total_conso(self.profile)
+
+
 def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
     """
     Compute the air consumption based on the dive profile.
