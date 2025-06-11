@@ -3,28 +3,36 @@
   "locale": "en_US.UTF-8",
   "metadata": {
     "appmode": "python-shiny",
-    "entrypoint": "app"
+    "entrypoint": "abloc.app:app"
   },
   "python": {
-    "version": "3.13",
+    "version": "3.12.10",
     "package_manager": {
       "name": "pip",
       "version": "25.1.1",
       "package_file": "requirements.txt"
     }
   },
+  "environment": {
+    "python": {
+      "requires": ">=3.12, <3.13"
+    }
+  },
   "files": {
     "requirements.txt": {
-      "checksum": "9a167e11511a39f484a6d4097d707948"
+      "checksum": "72b1425dbe5d5143c75a7857d9d2154b"
     },
     "app.py": {
-      "checksum": "6b6738a852328d6f98c4ac5f461c8ca4"
+      "checksum": "d73a5b8d76bf3a1205dcc7c9458e767d"
+    },
+    "pyproject.toml": {
+      "checksum": "6119b56f3cb70a81800a2874f7f3b1f6"
     },
     "shared.py": {
-      "checksum": "157237b19e79efcddf2dfc9eb4e63d87"
+      "checksum": "6b8d7ddf8ed27c67f016e2627b601774"
     },
     "utils.py": {
-      "checksum": "f2839ab8b6c62adbdcdd863a7f02beea"
+      "checksum": "eb20be7e5e808c9bb74fa6b366bdc976"
     }
   }
 }

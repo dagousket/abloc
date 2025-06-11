@@ -9,3 +9,6 @@ site/
 
 # Virtual environments
 .venv
+
+# Deploy file
+rsconnect-python/
