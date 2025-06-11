@@ -34,7 +34,7 @@ jobs:
         run: uv export --no-hashes -o abloc/requirements.txt
 
       - name: Generate rsconnect-python manifest.json
-        run: rsconnect write-manifest shiny abloc --entrypoint abloc.app:app --overwrite
+        run: uv run rsconnect write-manifest shiny abloc --entrypoint abloc.app:app --overwrite
 
       - name: Commit and push changes
         run: |
