@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "locale": "en_US.UTF-8",
+  "locale": "C.UTF-8",
   "metadata": {
     "appmode": "python-shiny",
     "entrypoint": "abloc.app:app"
   },
   "python": {
-    "version": "3.12.10",
+    "version": "3.12.3",
     "package_manager": {
       "name": "pip",
       "version": "25.1.1",
