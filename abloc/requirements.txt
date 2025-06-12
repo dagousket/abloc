@@ -12,6 +12,10 @@ asgiref==3.8.1
     # via shiny
 asttokens==3.0.0
     # via stack-data
+attrs==25.3.0
+    # via
+    #   jsonschema
+    #   referencing
 certifi==2025.4.26
     # via abloc
 click==8.2.1
@@ -33,6 +37,8 @@ decorator==5.2.1
     # via ipython
 executing==2.2.0
     # via stack-data
+fastjsonschema==2.21.1
+    # via nbformat
 fonttools==4.58.1
     # via matplotlib
 h11==0.16.0 ; sys_platform != 'emscripten'
@@ -51,8 +57,14 @@ ipywidgets==8.1.7
     #   shinywidgets
 jedi==0.19.2
     # via ipython
+jsonschema==4.24.0
+    # via nbformat
+jsonschema-specifications==2025.4.1
+    # via jsonschema
 jupyter-core==5.8.1
-    # via shinywidgets
+    # via
+    #   nbformat
+    #   shinywidgets
 jupyterlab-widgets==3.0.15
     # via ipywidgets
 kiwisolver==1.4.8
@@ -75,6 +87,8 @@ narwhals==1.41.0
     # via
     #   plotly
     #   shiny
+nbformat==5.10.4
+    # via abloc
 numpy==2.2.6
     # via
     #   contourpy
@@ -139,6 +153,14 @@ pywin32==310 ; platform_python_implementation != 'PyPy' and sys_platform == 'win
     # via jupyter-core
 questionary==2.1.0 ; sys_platform != 'emscripten'
     # via shiny
+referencing==0.36.2
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+rpds-py==0.25.1
+    # via
+    #   jsonschema
+    #   referencing
 rsconnect-python==1.26.0
     # via abloc
 seaborn==0.13.2
@@ -168,11 +190,13 @@ traitlets==5.14.3
     #   ipywidgets
     #   jupyter-core
     #   matplotlib-inline
+    #   nbformat
 typing-extensions==4.14.0
     # via
     #   anyio
     #   anywidget
     #   htmltools
+    #   referencing
     #   rsconnect-python
     #   shiny
 tzdata==2025.2
