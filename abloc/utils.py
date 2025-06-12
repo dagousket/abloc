@@ -3,21 +3,19 @@ import polars as pl
 
 class DiveProfile:
 
-    def __init__(self, time: list[float], depth: list[float], conso: float = 20.0):
+    def __init__(self, time: list[float], depth: list[float]):
         """
         Initialize a DiveProfile instance.
         Parameters:
         - time: Time in minutes.
         - depth: Depth in meters.
-        - conso: Consumption rate in liters per minute (default is 20.0).
         """
-        profile = pl.DataFrame(
+        self.profile = pl.DataFrame(
             {
                 "time": time,  # (minutes),
                 "depth": depth,  # (meters)
             }
         )
-        self.profile = compute_conso_from_profile(profile, conso)
 
     @property
     def total_conso(self) -> float:
@@ -28,6 +26,43 @@ class DiveProfile:
         - Total air consumption in liters.
         """
         return get_total_conso(self.profile)
+
+    def add_litre_conso(self, conso: float) -> None:
+        """
+        Add the air consumption to the dive profile.
+        Parameters:
+        - conso: Consumption rate in liters per minute.
+        Returns:
+        - None : Update dive profile with the new consumption added.
+        """
+        self.profile = compute_conso_from_profile(self.profile, conso)
+
+    def add_bloc_conso(self, volume: float, pressure: float) -> None:
+        """
+        Add the air consumption in bar to the dive profile.
+
+        Parameters:
+        - volume: volume of the tank.
+        - pressure: pressure of the tank in bar.
+
+        Returns:
+        - None : Update dive profile with the new consumption added.
+        """
+        # Ensure the profile has conso_totale and bar_remining columns
+        if "conso_totale" not in self.profile.columns:
+            raise ValueError(
+                "Profile must have 'conso_totale' column to add bloc conso."
+            )
+
+        # Create a new row with the last time and depth, and the new conso
+        self.profile = self.profile.with_columns(
+            conso_remaining=((volume * pressure) - pl.col("conso_totale")).clip(
+                lower_bound=0
+            ),
+            bar_remining=(pressure - (pl.col("conso_totale") / volume)).clip(
+                lower_bound=0
+            ),
+        )
 
 
 def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
