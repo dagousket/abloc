@@ -38,31 +38,12 @@ class DiveProfile:
         self.profile = compute_conso_from_profile(self.profile, conso)
 
     def add_bloc_conso(self, volume: float, pressure: float) -> None:
-        """
-        Add the air consumption in bar to the dive profile.
-
-        Parameters:
-        - volume: volume of the tank.
-        - pressure: pressure of the tank in bar.
-
-        Returns:
-        - None : Update dive profile with the new consumption added.
-        """
         # Ensure the profile has conso_totale and bar_remining columns
         if "conso_totale" not in self.profile.columns:
             raise ValueError(
                 "Profile must have 'conso_totale' column to add bloc conso."
             )
-
-        # Create a new row with the last time and depth, and the new conso
-        self.profile = self.profile.with_columns(
-            conso_remaining=((volume * pressure) - pl.col("conso_totale")).clip(
-                lower_bound=0
-            ),
-            bar_remining=(pressure - (pl.col("conso_totale") / volume)).clip(
-                lower_bound=0
-            ),
-        )
+        self.profile = compute_remaining_conso(self.profile, volume, pressure)
 
 
 def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
@@ -110,3 +91,27 @@ def get_total_conso(df: pl.DataFrame) -> float:
     - Total air consumption in liters.
     """
     return df.select(pl.last("conso_totale")).item()
+
+
+def compute_remaining_conso(
+    df: pl.DataFrame, volume: float, pressure: float
+) -> pl.DataFrame:
+    """
+    Add the air consumption in bar to the dive profile.
+
+    Parameters:
+    - volume: volume of the tank.
+    - pressure: pressure of the tank in bar.
+
+    Returns:
+    - polars dataframe with conso_remaining and bar_remining columns.
+    """
+    # Create a new row with the last time and depth, and the new conso
+    df = df.with_columns(
+        conso_remaining=((volume * pressure) - pl.col("conso_totale")).clip(
+            lower_bound=0
+        ),
+        bar_remining=(pressure - (pl.col("conso_totale") / volume)).clip(lower_bound=0),
+    )
+
+    return df
