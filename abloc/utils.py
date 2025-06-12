@@ -111,10 +111,23 @@ def compute_remaining_conso(
     """
     # Create a new row with the last time and depth, and the new conso
     df = df.with_columns(
-        conso_remaining=((volume * pressure) - pl.col("conso_totale")).clip(
-            lower_bound=0
-        ),
-        bar_remining=(pressure - (pl.col("conso_totale") / volume)).clip(lower_bound=0),
+        conso_remaining=((volume * pressure) - pl.col("conso_totale")),
+        bar_remaining=(pressure - (pl.col("conso_totale") / volume)),
     )
 
     return df
+
+
+def format_profile(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Format the dive profile DataFrame for display.
+
+    Parameters:
+    - df: DataFrame containing the dive profile.
+
+    Returns:
+    - Formatted DataFrame with rounded values.
+    """
+    return df.with_columns(
+        pl.col("conso_totale", "conso_remaining", "bar_remaining").round(0)
+    ).with_columns(pl.col("conso_remaining", "bar_remaining").clip(lower_bound=0))

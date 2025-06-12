@@ -1,6 +1,7 @@
 # Import data from shared.py
 from shared import dp
 from plot import plot_profile
+from utils import format_profile
 
 from shiny import App, render, ui, req, reactive
 from shinywidgets import output_widget, render_widget
@@ -39,10 +40,7 @@ def server(input, output, session):
 
     @render.data_frame
     def dive_profile():
-        print("rendering dive profile")
-        # Get the dive profile from the reactive data provider
-        profile = reactive_dp.get().profile
-        return render.DataGrid(profile)
+        return render.DataGrid(format_profile(reactive_dp.get().profile), width="75%")
 
     @render.text
     def conso_tot():

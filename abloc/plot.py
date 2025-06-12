@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 
 
 def plot_profile(
-    df: pl.DataFrame, x: str = "time", y1: str = "depth", y2: str = "bar_remining"
+    df: pl.DataFrame, x: str = "time", y1: str = "depth", y2: str = "bar_remaining"
 ) -> go.FigureWidget:
     """
     Create a simple plot with two traces.
