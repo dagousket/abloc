@@ -1,4 +1,6 @@
 import polars as pl
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 class DiveProfile:
@@ -100,6 +102,7 @@ def compute_remaining_conso(
     Add the air consumption in bar to the dive profile.
 
     Parameters:
+    - df: DataFrame containing the dive profile with conso_totale columns.
     - volume: volume of the tank.
     - pressure: pressure of the tank in bar.
 

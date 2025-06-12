@@ -1,11 +1,9 @@
 # Import data from shared.py
 from shared import dp
+from plot import plot_profile
 
 from shiny import App, render, ui, req, reactive
 from shinywidgets import output_widget, render_widget
-import seaborn as sns
-import plotly.express as px
-import plotly.graph_objs as go
 from copy import copy
 
 app_ui = ui.page_sidebar(
@@ -37,14 +35,7 @@ def server(input, output, session):
 
     @render_widget
     def profile_plot():
-        fig = px.area(data_frame=reactive_dp.get().profile, x="time", y="depth")
-        fig.update_layout(
-            title="Depth over Time",
-            xaxis_title="Time",
-            yaxis_title="Depth (m)",
-        )
-        fig.update_yaxes(autorange="reversed")
-        return go.FigureWidget(fig)
+        return plot_profile(df=reactive_dp.get().profile)
 
     @render.data_frame
     def dive_profile():
