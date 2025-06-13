@@ -15,16 +15,19 @@
   },
   "files": {
     "requirements.txt": {
-      "checksum": "715e6121e7fb3a93e98cf96e9cf0ee29"
+      "checksum": "777f0461496b0d0d8319b8d86aa2a587"
     },
     "app.py": {
-      "checksum": "b82f6dea6d66e8c6a742fbbdfea68828"
+      "checksum": "270a25343aa9876e0d28816ef5983a02"
+    },
+    "css/styles.css": {
+      "checksum": "67b43094cfad8ece0f65272419dc4ec3"
     },
     "plot.py": {
       "checksum": "4a71ddc452c74192d388c28a9d9d18e8"
     },
     "utils.py": {
-      "checksum": "809825b546945130e8751d13a60cc197"
+      "checksum": "425544a0a32aa5085ac1826f1459e758"
     }
   }
 }
