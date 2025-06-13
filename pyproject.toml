@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.12, <3.13"
 dependencies = [
     "certifi>=2025.4.26",
+    "great-tables>=0.17.0",
+    "libsass>=0.23.0",
     "nbformat>=5.10.4",
     "plotly>=6.1.2",
     "polars>=1.30.0",

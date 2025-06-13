@@ -1,0 +1,17 @@
+:root {
+  --bslib-page-sidebar-title-bg: #006450;
+}
+
+.bslib-sidebar-layout>.sidebar {
+  background-color:#7fb1a717;
+}
+
+.irs--shiny .irs-bar {
+  border-top:1px solid #006450;
+  border-bottom:1px solid #006450;
+  background:#208773;
+}
+
+.irs--shiny .irs-single {
+  background-color:#208773;
+}
