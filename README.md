@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-![version](https://img.shields.io/badge/version-0.3.0-teal)
+![version](https://img.shields.io/badge/version-0.4.0-teal)
 ![coverage](https://img.shields.io/codecov/c/github/dagousket/abloc?style=flat&logo=pytest&logoColor=white)
 ![tests](https://img.shields.io/github/actions/workflow/status/dagousket/abloc/pytest.yml?style=flat&logo=githubactions&logoColor=white&label=ci-tests)
 ![deploy](https://img.shields.io/github/actions/workflow/status/dagousket/abloc/deploy.yml?style=flat&logo=githubactions&logoColor=white&label=ci-deploy)
