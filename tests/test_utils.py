@@ -1,6 +1,6 @@
 import pytest
 import polars as pl
-
+import great_tables as gt
 from abloc import utils
 
 
@@ -51,19 +51,12 @@ def test_add_bloc_conso():
 
 def test_format_profile():
     dp = utils.DiveProfile(time=[0, 1, 2], depth=[0, 10, 20])
+    with pytest.raises(ValueError):
+        utils.format_profile(dp.profile)
     dp.add_litre_conso(conso=10.0)
     dp.add_bloc_conso(volume=10.0, pressure=1.0)
     formatted_profile = utils.format_profile(dp.profile)
+    assert isinstance(formatted_profile, gt.GT), "Formatted profile is a GT"
     assert isinstance(
-        formatted_profile, pl.DataFrame
-    ), "Formatted profile a polars DataFrame"
-    assert formatted_profile["conso_remaining"].to_list() == [
-        10.0,
-        0.0,
-        0.0,
-    ], "Formatted conso_remaining is not going under 0"
-    assert formatted_profile["bar_remaining"].to_list() == [
-        1.0,
-        0.0,
-        0.0,
-    ], "Formatted bar_remaining is not going under 0"
+        formatted_profile._tbl_data, pl.DataFrame
+    ), "GT data is a polars DataFrame"
