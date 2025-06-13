@@ -12,3 +12,6 @@ site/
 
 # Deploy file
 rsconnect-python/
+
+# Codecov
+.coverage

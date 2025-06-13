@@ -92,6 +92,9 @@ def get_total_conso(df: pl.DataFrame) -> float:
     Returns:
     - Total air consumption in liters.
     """
+    # Ensure the profile has conso_totale and bar_remining columns
+    if "conso_totale" not in df.columns:
+        raise ValueError("Profile must have 'conso_totale' column to get total conso.")
     return df.select(pl.last("conso_totale")).item()
 
 
@@ -128,6 +131,7 @@ def format_profile(df: pl.DataFrame) -> pl.DataFrame:
     Returns:
     - Formatted DataFrame with rounded values.
     """
-    return df.with_columns(
-        pl.col("conso_totale", "conso_remaining", "bar_remaining").round(0)
-    ).with_columns(pl.col("conso_remaining", "bar_remaining").clip(lower_bound=0))
+    required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
+    if not required_columns.issubset(set(df.columns)):
+        raise ValueError(f"DataFrame must contain columns: {required_columns}")
+    return df.with_columns(pl.col(required_columns).clip(lower_bound=0).round(0))

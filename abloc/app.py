@@ -1,7 +1,6 @@
 # Import data from shared.py
-from shared import dp
 from plot import plot_profile
-from utils import format_profile
+from utils import format_profile, DiveProfile
 
 from shiny import App, render, ui, req, reactive
 from shinywidgets import output_widget, render_widget
@@ -23,6 +22,8 @@ app_ui = ui.page_sidebar(
 
 def server(input, output, session):
 
+    # create a basic initial dive profile and set up reactivity
+    dp = DiveProfile(time=[0.0, 10.0, 20.0, 30.0], depth=[0.0, 20.0, 20.0, 0.0])
     reactive_dp = reactive.value(dp)
 
     @reactive.effect
