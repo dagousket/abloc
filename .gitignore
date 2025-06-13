@@ -15,3 +15,7 @@ rsconnect-python/
 
 # Codecov
 .coverage
+
+# Readme preview
+README_files/
+README.html
