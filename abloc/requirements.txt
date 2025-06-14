@@ -18,10 +18,13 @@ attrs==25.3.0
     #   referencing
 babel==2.17.0
     # via great-tables
+black==25.1.0
+    # via abloc
 certifi==2025.4.26
     # via abloc
 click==8.2.1
     # via
+    #   black
     #   rsconnect-python
     #   shiny
     #   uvicorn
@@ -105,6 +108,8 @@ mdit-py-plugins==0.4.2
     # via shiny
 mdurl==0.1.2
     # via markdown-it-py
+mypy-extensions==1.1.0
+    # via black
 narwhals==1.41.0
     # via
     #   plotly
@@ -122,6 +127,7 @@ orjson==3.10.18
     # via shiny
 packaging==25.0
     # via
+    #   black
     #   htmltools
     #   matplotlib
     #   plotly
@@ -131,6 +137,8 @@ pandas==2.3.0
     # via seaborn
 parso==0.8.4
     # via jedi
+pathspec==0.12.1
+    # via black
 pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
     # via ipython
 pillow==11.2.1
@@ -138,7 +146,9 @@ pillow==11.2.1
 pip==25.1.1
     # via rsconnect-python
 platformdirs==4.3.8
-    # via jupyter-core
+    # via
+    #   black
+    #   jupyter-core
 plotly==6.1.2
     # via abloc
 pluggy==1.6.0

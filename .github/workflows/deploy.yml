@@ -1,4 +1,4 @@
-name: Update requirement files and deploy to ShinyApps.io
+name: Deploy to ShinyApps.io
 # useful links : https://docs.posit.co/shinyapps.io/guide/getting_started/#working-with-shiny-for-python
 
 on:
@@ -31,20 +31,6 @@ jobs:
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
-
-      - name: Generate requirements.txt with `uv`
-        run: uv export --no-hashes -o abloc/requirements.txt
-
-      - name: Generate rsconnect-python manifest.json
-        run: uv run rsconnect write-manifest shiny abloc --entrypoint abloc.app:app --overwrite
-
-      - name: Commit and push changes
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add abloc/requirements.txt abloc/manifest.json
-          git commit -m ":wrench: ci: update requirements and manifest files" || echo "No changes to commit"
-          git push origin main
 
       - name: Deploy to ShinyApps.io
         run: |

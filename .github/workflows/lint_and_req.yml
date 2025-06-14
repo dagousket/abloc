@@ -1,0 +1,57 @@
+name: Update requirement files and apply  black linting
+
+on:
+  pull_request:
+    branches:
+      - main # Trigger on pull requests to main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  lint_and_update_requirements:
+    env:
+      UV_SYSTEM_PYTHON: true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Generate requirements.txt with `uv`
+        run: uv export --no-hashes -o abloc/requirements.txt
+
+      - name: Generate rsconnect-python manifest.json
+        run: uv run rsconnect write-manifest shiny abloc --entrypoint abloc.app:app --overwrite
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add abloc/requirements.txt abloc/manifest.json
+          git commit -m ":wrench: ci: update requirements and manifest files" || echo "No req changes to commit"
+
+      - name: Apply black formatting
+        run: |
+          uv run black .
+
+      - name: Commit and push black changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m ":art: style: lint code with black" || echo "No black changes to commit"
+
+      - name: Push changes
+        if: github.event_name == 'pull_request' && github.head_ref != ''
+        run: |
+          git pull --rebase origin ${{ github.head_ref }}
+          git push origin HEAD:${{ github.head_ref }}
