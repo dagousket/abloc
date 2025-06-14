@@ -37,8 +37,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add abloc/requirements.txt abloc/manifest.json
-          git commit -m ":wrench: ci: update requirements and manifest files" || echo "No changes to commit"
-          git push
+          git commit -m ":wrench: ci: update requirements and manifest files" || echo "No req changes to commit"
 
       - name: Apply black formatting
         run: |
@@ -49,5 +48,10 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m ":black_circle: lint: black lint" || echo "No changes to commit"
-          git push
+          git commit -m ":art: style: lint code with black" || echo "No black changes to commit"
+
+      - name: Push changes
+        if: github.event_name == 'pull_request' && github.head_ref != ''
+        run: |
+          git pull --rebase origin ${{ github.head_ref }}
+          git push origin HEAD:${{ github.head_ref }}
