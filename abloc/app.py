@@ -38,7 +38,7 @@ def server(input, output, session):
 
     # create a basic initial dive profile and set up reactivity
     dp = DiveProfile(
-        time=[10.0, 10.0, 10.0],
+        time=[5.0, 20.0, 10.0],
         depth=[20.0, 20.0, 0.0],
         conso=20,
         volume=12,
@@ -75,14 +75,12 @@ def server(input, output, session):
             pl.col("segment") == input.row_select()
         )
         ui.update_slider("depth", value=selected_row["depth"].item())
-        ui.update_slider("time", value=selected_row["time"].item())
+        ui.update_slider("time", value=selected_row["time_interval"].item())
 
     @reactive.effect
     @reactive.event(input.update_segment)
     def _():
         req(input.row_select())
-        req(input.depth())
-        req(input.time())
         # update the selected segment with new depth and time
         newdp = copy(reactive_dp.get())
         newdp.update_segment(
