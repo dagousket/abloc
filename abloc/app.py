@@ -37,7 +37,13 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
 
     # create a basic initial dive profile and set up reactivity
-    dp = DiveProfile(time=[0.0, 10.0, 20.0, 30.0], depth=[0.0, 20.0, 20.0, 0.0])
+    dp = DiveProfile(
+        time=[10.0, 10.0, 10.0],
+        depth=[20.0, 20.0, 0.0],
+        conso=20,
+        volume=12,
+        pressure=200,
+    )
     reactive_dp = reactive.value(dp)
     segment_list = reactive.value(dp.profile["segment"].to_list())
 
@@ -46,13 +52,15 @@ def server(input, output, session):
     def _():
         # copy the class to trigger reactivity
         newdp = copy(reactive_dp.get())
-        newdp.add_litre_conso(conso=input.conso())
-        newdp.add_bloc_conso(volume=input.volume(), pressure=input.pressure())
+        newdp.conso = input.conso()
+        newdp.volume = input.volume()
+        newdp.pressure = input.pressure()
+        newdp.update_conso()
         reactive_dp.set(newdp)
 
     @render_widget
     def profile_plot():
-        return plot_profile(df=reactive_dp.get().profile)
+        return plot_profile(dp=reactive_dp.get())
 
     @reactive.effect
     @reactive.event(segment_list)
@@ -80,12 +88,10 @@ def server(input, output, session):
         newdp.update_segment(
             segment=input.row_select(),
             depth=input.depth(),
-            time=input.time(),
+            time_interval=input.time(),
         )
-        # recompute conso
-        newdp.add_litre_conso(conso=input.conso())
-        newdp.add_bloc_conso(volume=input.volume(), pressure=input.pressure())
-        # update the dp
+        newdp.update_time()
+        newdp.update_conso()
         reactive_dp.set(newdp)
 
     @gts.render_gt
