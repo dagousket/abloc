@@ -94,7 +94,7 @@ def server(input, output, session):
 
     @gts.render_gt
     def dive_profile():
-        return format_profile(df=reactive_dp.get().profile, volume=input.volume())
+        return format_profile(dp=reactive_dp.get())
 
 
 app = App(app_ui, server)

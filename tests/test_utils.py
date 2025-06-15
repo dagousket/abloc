@@ -19,7 +19,7 @@ def test_diveprofile_class():
     assert dp.profile["depth"].to_list() == [20, 20, 0], "Depth column is correct"
 
 
-def test_add_conso():
+def test_update_conso():
     dp = utils.DiveProfile(
         time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
     )
@@ -50,15 +50,61 @@ def test_add_conso():
     ], "bar_remaining values are correct"
 
 
+def test_update_time():
+    dp = utils.DiveProfile(
+        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+    )
+    # no total time before updating time
+    dp.profile = dp.profile.with_columns(time_interval=pl.Series([5, 20, 30]))
+    assert dp.profile["time"].to_list() == [5, 25, 35], "Initial time is correct"
+    dp.update_time()
+    assert dp.profile["time"].to_list() == [
+        5,
+        25,
+        55,
+    ], "Time column is updated correctly"
+
+
+def test_update_segment():
+    dp = utils.DiveProfile(
+        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+    )
+    assert dp.profile.filter(pl.col("segment") == "B").row(0) == (
+        20,
+        20,
+        "B",
+        25,
+    ), "Initial B segment is correct"
+    dp.update_segment(segment="B", time_interval=30, depth=10)
+    assert dp.profile.filter(pl.col("segment") == "B").row(0) == (
+        30,
+        10,
+        "B",
+        25,
+    ), "New B segment is correct"
+
+
 def test_format_profile():
     dp = utils.DiveProfile(
         time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
     )
     with pytest.raises(ValueError):
-        utils.format_profile(dp.profile)
+        utils.format_profile(dp)
     dp.update_conso()
-    formatted_profile = utils.format_profile(dp.profile)
+    formatted_profile = utils.format_profile(dp)
     assert isinstance(formatted_profile, gt.GT), "Formatted profile is a GT"
     assert isinstance(
         formatted_profile._tbl_data, pl.DataFrame
     ), "GT data is a polars DataFrame"
+
+
+def test_missing_columns():
+    df = pl.DataFrame(
+        {
+            "time_interval": [5, 20, 10],
+            "depth": [20, 20, 0],
+            "segment": ["A", "B", "C"],
+        }
+    )
+    with pytest.raises(ValueError):
+        utils.compute_remaining_conso(df, volume=12, pressure=200)

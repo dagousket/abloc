@@ -167,9 +167,6 @@ def edit_segment_time_depth(
     Returns:
     - None : Update the specified segment with new time and depth.
     """
-    if segment not in df["segment"].to_list():
-        raise ValueError(f"Segment {segment} does not exist in the profile.")
-
     df = df.with_columns(
         pl.when(pl.col("segment") == segment)
         .then(pl.lit(time_interval))
@@ -184,7 +181,7 @@ def edit_segment_time_depth(
     return df
 
 
-def format_profile(df: pl.DataFrame, volume: float = 12) -> GT:
+def format_profile(dp: DiveProfile) -> GT:
     """
     Format the dive profile DataFrame for display.
 
@@ -194,6 +191,7 @@ def format_profile(df: pl.DataFrame, volume: float = 12) -> GT:
     Returns:
     - Formatted DataFrame with rounded values.
     """
+    df = dp.profile
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
     if not required_columns.issubset(set(df.columns)):
         raise ValueError(f"DataFrame must contain columns: {required_columns}")
@@ -219,7 +217,7 @@ def format_profile(df: pl.DataFrame, volume: float = 12) -> GT:
         .data_color(
             columns=["conso_remaining"],
             palette=["firebrick", "lightcoral"],
-            domain=[0, 50 * volume],
+            domain=[0, 50 * dp.volume],
             na_color="white",
         )
     )
