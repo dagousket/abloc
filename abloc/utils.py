@@ -2,6 +2,7 @@ import polars as pl
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from great_tables import GT, html
+from string import ascii_uppercase
 
 
 class DiveProfile:
@@ -12,11 +13,14 @@ class DiveProfile:
         Parameters:
         - time: Time in minutes.
         - depth: Depth in meters.
+        Returns:
+        - None : Initializes the dive profile with time, depth, and segment labels.
         """
         self.profile = pl.DataFrame(
             {
                 "time": time,  # (minutes),
-                "depth": depth,  # (meters)
+                "depth": depth,  # (meters),
+                "segment": list(ascii_uppercase[: len(time)]),  # Segment labels
             }
         )
 
@@ -48,6 +52,30 @@ class DiveProfile:
             )
         self.profile = compute_remaining_conso(self.profile, volume, pressure)
 
+    def update_segment(self, segment: str, time: float, depth: float) -> None:
+        """
+        Update a specific segment of the dive profile.
+        Parameters:
+        - segment: Segment label to update.
+        - time: New time in minutes for the segment.
+        - depth: New depth in meters for the segment.
+        Returns:
+        - None : Update the specified segment with new time and depth.
+        """
+        if segment not in self.profile["segment"].to_list():
+            raise ValueError(f"Segment {segment} does not exist in the profile.")
+
+        self.profile = self.profile.with_columns(
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(time))
+            .otherwise("time")
+            .alias("time"),
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(depth))
+            .otherwise("depth")
+            .alias("depth"),
+        )
+
 
 def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
     """
@@ -74,6 +102,7 @@ def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
         )
         .with_columns(conso=pl.col("trpz_area") * conso)
         .select(
+            pl.col("segment"),
             pl.col("time"),
             pl.col("depth"),
             pl.col("conso"),
@@ -137,11 +166,12 @@ def format_profile(df: pl.DataFrame, volume: float = 12) -> GT:
         raise ValueError(f"DataFrame must contain columns: {required_columns}")
     table_output = df.with_columns(
         pl.col(required_columns).clip(lower_bound=0).round(0)
-    ).select(["time", "depth", "bar_remaining", "conso_remaining"])
+    ).select(["segment", "time", "depth", "bar_remaining", "conso_remaining"])
     table_output = (
         GT(table_output)
         .tab_header(title="Dive Profile Summary")
         .cols_label(
+            segment=html("<b>Segment</b>"),
             time=html("<b>Time</b> (min)"),
             depth=html("<b>Depth</b> (m)"),
             conso_remaining=html("<b>Air remaining</b> (L)"),

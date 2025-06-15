@@ -2,6 +2,8 @@
 from plot import plot_profile
 from utils import format_profile, DiveProfile
 
+import polars as pl
+
 from shiny import App, render, ui, req, reactive
 from shinywidgets import output_widget, render_widget
 import great_tables.shiny as gts
@@ -15,6 +17,14 @@ app_ui = ui.page_sidebar(
         ui.input_slider("volume", "Bloc (L)", 10, 30, 12, step=1),
         ui.input_slider("conso", "Conso (L/min)", 10, 30, 20, step=1),
         ui.input_slider("pressure", "Pression (bar)", 0, 300, 200, step=10),
+        ui.input_select(
+            "row_select",
+            "Select a profile segment",
+            [],
+        ),
+        ui.input_slider("depth", "Depth (m)", 0, 60, 20, step=1),
+        ui.input_slider("time", "Time (min)", 0, 60, 0, step=1),
+        ui.input_action_button("update_segment", "Update Segment"),
     ),
     output_widget("profile_plot"),
     gts.output_gt("dive_profile"),
@@ -29,6 +39,7 @@ def server(input, output, session):
     # create a basic initial dive profile and set up reactivity
     dp = DiveProfile(time=[0.0, 10.0, 20.0, 30.0], depth=[0.0, 20.0, 20.0, 0.0])
     reactive_dp = reactive.value(dp)
+    segment_list = reactive.value(dp.profile["segment"].to_list())
 
     @reactive.effect
     @reactive.event(input.conso, input.volume, input.pressure)
@@ -42,6 +53,40 @@ def server(input, output, session):
     @render_widget
     def profile_plot():
         return plot_profile(df=reactive_dp.get().profile)
+
+    @reactive.effect
+    @reactive.event(segment_list)
+    def _():
+        ui.update_select("row_select", choices=segment_list.get())
+
+    @reactive.effect
+    @reactive.event(input.row_select)
+    def _():
+        req(input.row_select())
+        selected_row = reactive_dp.get().profile.filter(
+            pl.col("segment") == input.row_select()
+        )
+        ui.update_slider("depth", value=selected_row["depth"].item())
+        ui.update_slider("time", value=selected_row["time"].item())
+
+    @reactive.effect
+    @reactive.event(input.update_segment)
+    def _():
+        req(input.row_select())
+        req(input.depth())
+        req(input.time())
+        # update the selected segment with new depth and time
+        newdp = copy(reactive_dp.get())
+        newdp.update_segment(
+            segment=input.row_select(),
+            depth=input.depth(),
+            time=input.time(),
+        )
+        # recompute conso
+        newdp.add_litre_conso(conso=input.conso())
+        newdp.add_bloc_conso(volume=input.volume(), pressure=input.pressure())
+        # update the dp
+        reactive_dp.set(newdp)
 
     @gts.render_gt
     def dive_profile():
