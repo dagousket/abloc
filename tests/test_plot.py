@@ -4,11 +4,10 @@ from abloc import utils
 from abloc import plot
 import plotly.graph_objects as go
 import polars as pl
-from abloc.utils import DiveProfile
 
 
 def test_plot():
-    dummy_dp = DiveProfile(
+    dummy_dp = utils.DiveProfile(
         time=[5.0, 20.0, 10.0],
         depth=[20.0, 20.0, 0.0],
         conso=20,
@@ -18,7 +17,9 @@ def test_plot():
     dummy_dp.update_conso()
 
     # Test if the plot function returns a figure object
-    fig = plot.plot_profile(dp=dummy_dp, x="time", y1="depth", y2="bar_remaining")
+    fig = plot.plot_profile(
+        df=dummy_dp.profile, x="time", y1="depth", y2="bar_remaining"
+    )
     assert isinstance(fig, go.FigureWidget)
     # Test if the figure has the expected number of traces
     data = fig.data

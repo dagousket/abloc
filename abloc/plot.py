@@ -1,24 +1,29 @@
 import polars as pl
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from .utils import DiveProfile
 
 
 def plot_profile(
-    dp: DiveProfile, x: str = "time", y1: str = "depth", y2: str = "bar_remaining"
+    df: pl.DataFrame,
+    x: str = "time",
+    y1: str = "depth",
+    y2: str = "bar_remaining",
+    pressure: float = 200.0,
 ) -> go.FigureWidget:
     """
     Create the Dive Profile plot.
     Parameters
     ----------
-    dp : DiveProfile
-        A DiveProfile object containing the dive data.
+    df : DiveProfile
+        A DiveProfile dataframe the dive data.
     x : str
         Column name for the x-axis (default is "time").
     y1 : str
         Column name for the first y-axis (default is "depth").
     y2 : str
         Column name for the second y-axis (default is "bar_remaining").
+    pressure : float
+        Initial pressure of the bloc in bar (default is 200.0).
     Returns
     -------
     go.FigureWidget
@@ -29,10 +34,10 @@ def plot_profile(
         {
             "time": [0.0],
             "depth": [0.0],
-            "bar_remaining": float(dp.pressure),
+            "bar_remaining": float(pressure),
         }
     )
-    df = pl.concat([initial_state, dp.profile], how="diagonal_relaxed")
+    df = pl.concat([initial_state, df], how="diagonal_relaxed")
 
     # Record max values for plot range
     max_depth = df.select(pl.max(y1)).item()
