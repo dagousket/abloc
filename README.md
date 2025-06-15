@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-<a><img src="https://img.shields.io/badge/version-0.4.0-teal" /></a>
+<a><img src="https://img.shields.io/badge/version-0.5.0-teal" /></a>
 <a><img src="https://img.shields.io/codecov/c/github/dagousket/abloc?style=flat&logo=pytest&logoColor=white" /></a>
 <a><img src="https://img.shields.io/github/actions/workflow/status/dagousket/abloc/pytest.yml?style=flat&logo=githubactions&logoColor=white&label=ci-tests" /></a>
 <a><img src="https://img.shields.io/github/actions/workflow/status/dagousket/abloc/deploy.yml?style=flat&logo=githubactions&logoColor=white&label=ci-deploy" /></a>
