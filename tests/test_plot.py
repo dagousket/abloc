@@ -4,19 +4,21 @@ from abloc import utils
 from abloc import plot
 import plotly.graph_objects as go
 import polars as pl
+from abloc.utils import DiveProfile
 
 
 def test_plot():
-    dummy_dp = pl.DataFrame(
-        {
-            "time": [0, 1, 2, 3, 4],
-            "depth": [10, 20, 30, 40, 50],
-            "bar_remaining": [200, 180, 160, 140, 120],
-        }
+    dummy_dp = DiveProfile(
+        time=[5.0, 20.0, 10.0],
+        depth=[20.0, 20.0, 0.0],
+        conso=20,
+        volume=12,
+        pressure=200,
     )
+    dummy_dp.update_conso()
 
     # Test if the plot function returns a figure object
-    fig = plot.plot_profile(df=dummy_dp, x="time", y1="depth", y2="bar_remaining")
+    fig = plot.plot_profile(dp=dummy_dp, x="time", y1="depth", y2="bar_remaining")
     assert isinstance(fig, go.FigureWidget)
     # Test if the figure has the expected number of traces
     data = fig.data
@@ -30,5 +32,5 @@ def test_plot():
     # Test if the figure title is set correctly
     assert fig.layout.title.text == "Dive Profile"
     # Test if the y-axis ranges are set correctly
-    assert fig.layout.yaxis.range == (50, 0)  # Depth should be descending
-    assert fig.layout.yaxis2.range == (0, 200)  # Bloc pressure should be ascending
+    assert fig.layout.yaxis.range == (20.0, 0)  # Depth should be descending
+    assert fig.layout.yaxis2.range == (0, 200.0)  # Bloc pressure should be ascending
