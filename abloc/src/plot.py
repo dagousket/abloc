@@ -102,8 +102,6 @@ def format_profile(dp: DiveProfile) -> GT:
     df = pl.concat([initial_state, dp.profile], how="diagonal_relaxed")
 
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
-    if not required_columns.issubset(set(df.columns)):
-        raise ValueError(f"DataFrame must contain columns: {required_columns}")
     table_output = df.with_columns(
         pl.col(required_columns).clip(lower_bound=0).round(0)
     ).select(

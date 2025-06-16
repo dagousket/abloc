@@ -2,16 +2,18 @@ import pytest
 import polars as pl
 import great_tables as gt
 from abloc.src import utils
+from abloc.src import plot
 
 
 def test_diveprofile_class():
-    dp = utils.DiveProfile(time=[5, 20, 10], depth=[20, 20, 0])
+    dp = utils.DiveProfile(time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20])
     assert isinstance(dp, utils.DiveProfile), "DiveProfile class is correct"
     assert isinstance(dp.profile, utils.pl.DataFrame), "Profile is a polars DataFrame"
-    assert dp.profile.shape == (3, 4), "Profile has 3 rows and 2 columns"
+    assert dp.profile.shape == (3, 5), "Profile has 3 rows and 5 columns"
     assert dp.profile.columns == [
         "time_interval",
         "depth",
+        "conso_per_min",
         "segment",
         "time",
     ], "Profile has correct columns names"
@@ -21,7 +23,7 @@ def test_diveprofile_class():
 
 def test_update_conso():
     dp = utils.DiveProfile(
-        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+        time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20], volume=12, pressure=200
     )
     # no total conso before adding conso
     with pytest.raises(ValueError):
@@ -52,7 +54,11 @@ def test_update_conso():
 
 def test_update_time():
     dp = utils.DiveProfile(
-        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+        time=[5, 20, 10],
+        depth=[20, 20, 0],
+        conso=[20, 20, 20],
+        volume=12,
+        pressure=200,
     )
     # no total time before updating time
     dp.profile = dp.profile.with_columns(time_interval=pl.Series([5, 20, 30]))
@@ -67,17 +73,19 @@ def test_update_time():
 
 def test_update_segment():
     dp = utils.DiveProfile(
-        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+        time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20], volume=12, pressure=200
     )
     assert dp.profile.filter(pl.col("segment") == "B").row(0) == (
+        20,
         20,
         20,
         "B",
         25,
     ), "Initial B segment is correct"
-    dp.update_segment(segment="B", time_interval=30, depth=10)
+    dp.update_segment(segment="B", time_interval=30, depth=10, conso=10)
     assert dp.profile.filter(pl.col("segment") == "B").row(0) == (
         30,
+        10,
         10,
         "B",
         25,
@@ -86,12 +94,10 @@ def test_update_segment():
 
 def test_format_profile():
     dp = utils.DiveProfile(
-        time=[5, 20, 10], depth=[20, 20, 0], conso=20, volume=12, pressure=200
+        time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20], volume=12, pressure=200
     )
-    with pytest.raises(ValueError):
-        utils.format_profile(dp)
     dp.update_conso()
-    formatted_profile = utils.format_profile(dp)
+    formatted_profile = plot.format_profile(dp)
     assert isinstance(formatted_profile, gt.GT), "Formatted profile is a GT"
     assert isinstance(
         formatted_profile._tbl_data, pl.DataFrame
