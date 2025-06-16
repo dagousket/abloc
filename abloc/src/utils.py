@@ -1,7 +1,6 @@
 import polars as pl
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from great_tables import GT, html
 from string import ascii_uppercase
 
 
@@ -11,7 +10,7 @@ class DiveProfile:
         self,
         time: list[float],
         depth: list[float],
-        conso: float = 20.0,
+        conso: list[float],
         volume: float = 12.0,
         pressure: float = 200.0,
     ):
@@ -27,10 +26,10 @@ class DiveProfile:
             {
                 "time_interval": time,  # (minutes),
                 "depth": depth,  # (meters),
+                "conso_per_min": conso,  # (liters per minute)
                 "segment": list(ascii_uppercase[: len(time)]),  # Segment labels
             }
         ).with_columns(time=pl.col("time_interval").cum_sum())
-        self.conso = conso  # Consumption rate in liters per minute
         self.volume = volume  # Block volume in liters
         self.pressure = pressure  # Pressure in bar
 
@@ -52,7 +51,7 @@ class DiveProfile:
         Returns:
         - None : Updates the profile with conso and remaining conso.
         """
-        self.profile = compute_conso_from_profile(self.profile, self.conso)
+        self.profile = compute_conso_from_profile(self.profile)
         self.profile = compute_remaining_conso(self.profile, self.volume, self.pressure)
 
     def update_time(self) -> None:
@@ -63,22 +62,25 @@ class DiveProfile:
         """
         self.profile = self.profile.with_columns(time=pl.col("time_interval").cum_sum())
 
-    def update_segment(self, segment: str, time_interval: float, depth: float) -> None:
+    def update_segment(
+        self, segment: str, time_interval: float, depth: float, conso: float
+    ) -> None:
         """
         Update a specific segment of the dive profile.
         Parameters:
         - segment: Segment label to update.
         - time_interval: New time in minutes for the segment.
         - depth: New depth in meters for the segment.
+        - conso: New consumption rate in liters per minute for the segment.
         Returns:
         - None : Update the specified segment with new time and depth.
         """
         self.profile = edit_segment_time_depth(
-            self.profile, segment, time_interval, depth
+            self.profile, segment, time_interval, depth, conso
         )
 
 
-def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
+def compute_conso_from_profile(df: pl.DataFrame) -> pl.DataFrame:
     """
     Compute the air consumption based on the dive profile.
 
@@ -100,13 +102,14 @@ def compute_conso_from_profile(df: pl.DataFrame, conso: float) -> pl.DataFrame:
         .with_columns(
             trpz_area=(pl.col("bar") + pl.col("init_bar")) * pl.col("time_interval") / 2
         )
-        .with_columns(conso=pl.col("trpz_area") * conso)
+        .with_columns(conso=pl.col("trpz_area") * pl.col("conso_per_min"))
         .select(
             pl.col("segment"),
             pl.col("time"),
             pl.col("time_interval"),
             pl.col("depth"),
             pl.col("conso"),
+            pl.col("conso_per_min"),
             pl.col("conso").cum_sum().alias("conso_totale"),
         )
     )
@@ -156,7 +159,7 @@ def compute_remaining_conso(
 
 
 def edit_segment_time_depth(
-    df: pl.DataFrame, segment: str, time_interval: float, depth: float
+    df: pl.DataFrame, segment: str, time_interval: float, depth: float, conso: float
 ) -> pl.DataFrame:
     """
     Update a specific segment of the dive profile.
@@ -164,61 +167,35 @@ def edit_segment_time_depth(
     - segment: Segment label to update.
     - time_interval: New time in minutes for the segment.
     - depth: New depth in meters for the segment.
+    - conso: New consumption rate in liters per minute for the segment.
     Returns:
     - None : Update the specified segment with new time and depth.
     """
-    df = df.with_columns(
-        pl.when(pl.col("segment") == segment)
-        .then(pl.lit(time_interval))
-        .otherwise("time_interval")
-        .alias("time_interval"),
-        pl.when(pl.col("segment") == segment)
-        .then(pl.lit(depth))
-        .otherwise("depth")
-        .alias("depth"),
-    )
+    if segment in df["segment"].to_list():
+        df = df.with_columns(
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(time_interval))
+            .otherwise("time_interval")
+            .alias("time_interval"),
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(depth))
+            .otherwise("depth")
+            .alias("depth"),
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(conso))
+            .otherwise("conso_per_min")
+            .alias("conso_per_min"),
+        )
+    else:
+        # If the segment does not exist, create a new one
+        new_segment = pl.DataFrame(
+            {
+                "time_interval": [time_interval],
+                "depth": [depth],
+                "segment": [ascii_uppercase[len(df)]],  # New segment label
+                "conso_per_min": [conso],  # New consumption rate
+            }
+        )
+        df = pl.concat([df, new_segment], how="diagonal_relaxed")
 
     return df
-
-
-def format_profile(dp: DiveProfile) -> GT:
-    """
-    Format the dive profile DataFrame for display.
-
-    Parameters:
-    - df: DataFrame containing the dive profile.
-
-    Returns:
-    - Formatted DataFrame with rounded values.
-    """
-    df = dp.profile
-    required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
-    if not required_columns.issubset(set(df.columns)):
-        raise ValueError(f"DataFrame must contain columns: {required_columns}")
-    table_output = df.with_columns(
-        pl.col(required_columns).clip(lower_bound=0).round(0)
-    ).select(["segment", "time_interval", "depth", "bar_remaining", "conso_remaining"])
-    table_output = (
-        GT(table_output)
-        .tab_header(title="Dive Profile Summary")
-        .cols_label(
-            segment=html("<b>Segment</b>"),
-            time_interval=html("<b>Time</b> (min)"),
-            depth=html("<b>Depth</b> (m)"),
-            conso_remaining=html("<b>Air remaining</b> (L)"),
-            bar_remaining=html("<b>Pressure remaining</b> (bar)"),
-        )
-        .data_color(
-            columns=["bar_remaining"],
-            palette=["firebrick", "lightcoral"],
-            domain=[0, 50],
-            na_color="white",
-        )
-        .data_color(
-            columns=["conso_remaining"],
-            palette=["firebrick", "lightcoral"],
-            domain=[0, 50 * dp.volume],
-            na_color="white",
-        )
-    )
-    return table_output
