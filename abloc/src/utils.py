@@ -1,7 +1,6 @@
 import polars as pl
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from great_tables import GT, html
 from string import ascii_uppercase
 
 
@@ -179,46 +178,3 @@ def edit_segment_time_depth(
     )
 
     return df
-
-
-def format_profile(dp: DiveProfile) -> GT:
-    """
-    Format the dive profile DataFrame for display.
-
-    Parameters:
-    - df: DataFrame containing the dive profile.
-
-    Returns:
-    - Formatted DataFrame with rounded values.
-    """
-    df = dp.profile
-    required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
-    if not required_columns.issubset(set(df.columns)):
-        raise ValueError(f"DataFrame must contain columns: {required_columns}")
-    table_output = df.with_columns(
-        pl.col(required_columns).clip(lower_bound=0).round(0)
-    ).select(["segment", "time_interval", "depth", "bar_remaining", "conso_remaining"])
-    table_output = (
-        GT(table_output)
-        .tab_header(title="Dive Profile Summary")
-        .cols_label(
-            segment=html("<b>Segment</b>"),
-            time_interval=html("<b>Time</b> (min)"),
-            depth=html("<b>Depth</b> (m)"),
-            conso_remaining=html("<b>Air remaining</b> (L)"),
-            bar_remaining=html("<b>Pressure remaining</b> (bar)"),
-        )
-        .data_color(
-            columns=["bar_remaining"],
-            palette=["firebrick", "lightcoral"],
-            domain=[0, 50],
-            na_color="white",
-        )
-        .data_color(
-            columns=["conso_remaining"],
-            palette=["firebrick", "lightcoral"],
-            domain=[0, 50 * dp.volume],
-            na_color="white",
-        )
-    )
-    return table_output
