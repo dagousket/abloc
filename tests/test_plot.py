@@ -17,9 +17,7 @@ def test_plot():
     dummy_dp.update_conso()
 
     # Test if the plot function returns a figure object
-    fig = plot.plot_profile(
-        df=dummy_dp.profile, x="time", y1="depth", y2="bar_remaining"
-    )
+    fig = plot.plot_profile(dp=dummy_dp, x="time", y1="depth", y2="bar_remaining")
     assert isinstance(fig, go.FigureWidget)
     # Test if the figure has the expected number of traces
     data = fig.data

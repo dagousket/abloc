@@ -60,7 +60,7 @@ def server(input, output, session):
 
     @render_widget
     def profile_plot():
-        return plot_profile(df=reactive_dp.get().profile)
+        return plot_profile(dp=reactive_dp.get())
 
     @reactive.effect
     @reactive.event(segment_list)
