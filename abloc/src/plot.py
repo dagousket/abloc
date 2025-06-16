@@ -86,7 +86,20 @@ def format_profile(dp: DiveProfile) -> GT:
     Returns:
     - Formatted DataFrame with rounded values.
     """
-    df = dp.profile
+    # Add starting point
+    initial_state = pl.DataFrame(
+        {
+            "time": [0.0],
+            "time_interval": [0.0],
+            "depth": [0.0],
+            "bar_remaining": [float(dp.pressure)],
+            "conso_remaining": [float(dp.volume * dp.pressure)],
+            "conso_totale": [0.0],
+            "segment": ["Start"],
+        }
+    )
+    df = pl.concat([initial_state, dp.profile], how="diagonal_relaxed")
+
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
     if not required_columns.issubset(set(df.columns)):
         raise ValueError(f"DataFrame must contain columns: {required_columns}")
