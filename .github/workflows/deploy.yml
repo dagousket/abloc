@@ -35,4 +35,4 @@ jobs:
       - name: Deploy to ShinyApps.io
         run: |
           uv run rsconnect add --account $SHINY_USERNAME --name $SHINY_USERNAME --token $SHINY_TOKEN --secret $SHINY_SECRET
-          uv run rsconnect deploy shiny $APP_NAME --name $SHINY_USERNAME --title $APP_NAME --app-id $APP_ID
+          uv run rsconnect deploy shiny . --name $SHINY_USERNAME --title $APP_NAME --app-id $APP_ID
