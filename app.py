@@ -1,6 +1,6 @@
 # Import data from shared.py
-from plot import plot_profile
-from utils import format_profile, DiveProfile
+from abloc.src.plot import plot_profile
+from abloc.src.utils import format_profile, DiveProfile
 
 import polars as pl
 

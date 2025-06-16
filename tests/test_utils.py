@@ -1,7 +1,7 @@
 import pytest
 import polars as pl
 import great_tables as gt
-from abloc import utils
+from abloc.src import utils
 
 
 def test_diveprofile_class():

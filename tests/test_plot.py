@@ -1,7 +1,7 @@
 import pytest
 
-from abloc import utils
-from abloc import plot
+from abloc.src import utils
+from abloc.src import plot
 import plotly.graph_objects as go
 import polars as pl
 

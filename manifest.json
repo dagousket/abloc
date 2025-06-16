@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "locale": "en_US.UTF-8",
+  "metadata": {
+    "appmode": "python-shiny",
+    "entrypoint": "app"
+  },
+  "python": {
+    "version": "3.12.10",
+    "package_manager": {
+      "name": "pip",
+      "version": "25.1.1",
+      "package_file": "requirements.txt"
+    }
+  },
+  "environment": {
+    "python": {
+      "requires": "~=3.12.0"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "9018a9a91c428da333b6cf381ba5681d"
+    },
+    ".DS_Store": {
+      "checksum": "05c70b89db669ee0544d6f98d5e1fa3c"
+    },
+    ".bumpversion.toml": {
+      "checksum": "1d784737eaa917d27f10749809ad8dd5"
+    },
+    ".coverage": {
+      "checksum": "d674b24dd22fe0194bfbb3a001e3bb1b"
+    },
+    ".github/workflows/deploy.yml": {
+      "checksum": "0c08e0b1f3d7b0e71ddffd139d3dea46"
+    },
+    ".github/workflows/lint_and_req.yml": {
+      "checksum": "6b134d0d8ff8be6da696b4e0a4294423"
+    },
+    ".github/workflows/pytest.yml": {
+      "checksum": "52d2eaf77ca8b4247c163232ffbb7209"
+    },
+    ".gitignore": {
+      "checksum": "e014e893ce184b99fe79883468c45930"
+    },
+    ".pytest_cache/.gitignore": {
+      "checksum": "ae07caff09568018697eb6087d745223"
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "checksum": "f552fcc7d0ecdb6607533519d6898357"
+    },
+    ".pytest_cache/README.md": {
+      "checksum": "7cc7f8d7cb2f2f6ea48da17c4b42c097"
+    },
+    ".pytest_cache/v/cache/lastfailed": {
+      "checksum": "99914b932bd37a50b983c5e7c90ae93b"
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "checksum": "7cb266f25bbd53fef61768c8dead1f56"
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "checksum": "d751713988987e9331980363e24189ce"
+    },
+    ".python-version": {
+      "checksum": "61939823fbcc7e8de3b61ab105331baf"
+    },
+    "README.html": {
+      "checksum": "b156d442f0cc4154b9e197656384e0f4"
+    },
+    "README.md": {
+      "checksum": "39c04e750f7d4bff0270fc05813803af"
+    },
+    "VERSION": {
+      "checksum": "81b7ee5ce7df955bad631aada4875d17"
+    },
+    "abloc/__init__.py": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "abloc/__pycache__/__init__.cpython-312.pyc": {
+      "checksum": "6edb1f455f8932ae874d696115f3adf8"
+    },
+    "abloc/rsconnect-python/abloc.json": {
+      "checksum": "878ca7731c9a3d82cc27f905ed3f96df"
+    },
+    "abloc/src/__init__.py": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "abloc/src/__pycache__/__init__.cpython-312.pyc": {
+      "checksum": "48ea8ecba8c0649d166fa9548623910b"
+    },
+    "abloc/src/__pycache__/plot.cpython-312.pyc": {
+      "checksum": "c2151936f011c294e9579a317a19a617"
+    },
+    "abloc/src/__pycache__/utils.cpython-312.pyc": {
+      "checksum": "4ec1731f454715821b5c8e3d3df0c71c"
+    },
+    "abloc/src/plot.py": {
+      "checksum": "29553b275fe2ab233e83dd2f7f186796"
+    },
+    "abloc/src/utils.py": {
+      "checksum": "9b898170d51cf2c9460c3996bbed746e"
+    },
+    "app.py": {
+      "checksum": "f013a7f5c35e809755dfa66854559982"
+    },
+    "css/styles.css": {
+      "checksum": "67b43094cfad8ece0f65272419dc4ec3"
+    },
+    "logo-readme.svg": {
+      "checksum": "f2f2198ad43b9d0faaf77c9b11014d95"
+    },
+    "main.py": {
+      "checksum": "3d5f00114c2380be69a4e88c5ca3b269"
+    },
+    "pyproject.toml": {
+      "checksum": "00f604988cd16a70dcf40ec776faa1ca"
+    },
+    "tests/__init__.py": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "tests/__pycache__/__init__.cpython-312.pyc": {
+      "checksum": "a18ea31f4bfffe7d7819bf16f657090a"
+    },
+    "tests/__pycache__/test_plot.cpython-312-pytest-8.4.0.pyc": {
+      "checksum": "b4933136b2e4e1df3c56fb37a8f523b1"
+    },
+    "tests/__pycache__/test_utils.cpython-312-pytest-8.4.0.pyc": {
+      "checksum": "26dc74f038b14e177940b912a7d4ac07"
+    },
+    "tests/test_plot.py": {
+      "checksum": "2578e98b4c97be934bf25d0590b92dc1"
+    },
+    "tests/test_utils.py": {
+      "checksum": "f1dcd9eac3a62e708c653c54e919129a"
+    },
+    "uv.lock": {
+      "checksum": "3b3fabcf66e1dfdba2586b9170ffe04b"
+    }
+  }
+}
