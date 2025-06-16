@@ -166,15 +166,26 @@ def edit_segment_time_depth(
     Returns:
     - None : Update the specified segment with new time and depth.
     """
-    df = df.with_columns(
-        pl.when(pl.col("segment") == segment)
-        .then(pl.lit(time_interval))
-        .otherwise("time_interval")
-        .alias("time_interval"),
-        pl.when(pl.col("segment") == segment)
-        .then(pl.lit(depth))
-        .otherwise("depth")
-        .alias("depth"),
-    )
+    if segment in df["segment"].to_list():
+        df = df.with_columns(
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(time_interval))
+            .otherwise("time_interval")
+            .alias("time_interval"),
+            pl.when(pl.col("segment") == segment)
+            .then(pl.lit(depth))
+            .otherwise("depth")
+            .alias("depth"),
+        )
+    else:
+        # If the segment does not exist, create a new one
+        new_segment = pl.DataFrame(
+            {
+                "time_interval": [time_interval],
+                "depth": [depth],
+                "segment": [ascii_uppercase[len(df)]],  # New segment label
+            }
+        )
+        df = pl.concat([df, new_segment], how="diagonal_relaxed")
 
     return df
