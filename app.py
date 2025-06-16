@@ -21,7 +21,6 @@ app_ui = ui.page_sidebar(
             )
         ),
         ui.input_slider("volume", "Bloc (L)", 10, 30, 12, step=1),
-        ui.input_slider("conso", "Conso (L/min)", 10, 30, 20, step=1),
         ui.input_slider("pressure", "Pression (bar)", 0, 300, 200, step=10),
         ui.input_switch("toggle_segment", "Edit mode", False),
         ui.panel_conditional(
@@ -33,6 +32,7 @@ app_ui = ui.page_sidebar(
             ),
             ui.input_slider("depth", "Depth (m)", 0, 60, 20, step=1),
             ui.input_slider("time", "Time (min)", 0, 60, 0, step=1),
+            ui.input_slider("conso", "Conso (L/min)", 5, 30, 20, step=1),
             ui.input_action_button(
                 "update_segment",
                 "Update Segment",
@@ -57,7 +57,7 @@ def server(input, output, session):
     dp = DiveProfile(
         time=[5.0, 20.0, 10.0],
         depth=[20.0, 20.0, 0.0],
-        conso=20,
+        conso=[20, 20, 20],
         volume=12,
         pressure=200,
     )
@@ -65,11 +65,10 @@ def server(input, output, session):
     segment_list = reactive.value(dp.profile["segment"].to_list())
 
     @reactive.effect
-    @reactive.event(input.conso, input.volume, input.pressure)
+    @reactive.event(input.volume, input.pressure)
     def _():
         # copy the class to trigger reactivity
         newdp = copy(reactive_dp.get())
-        newdp.conso = input.conso()
         newdp.volume = input.volume()
         newdp.pressure = input.pressure()
         newdp.update_conso()
@@ -101,11 +100,12 @@ def server(input, output, session):
                 label="Update Segment",
                 icon=ui.tags.i(class_="fa-solid fa-wand-magic-sparkles"),
             )
-        selected_row = reactive_dp.get().profile.filter(
-            pl.col("segment") == input.row_select()
-        )
-        ui.update_slider("depth", value=selected_row["depth"].item())
-        ui.update_slider("time", value=selected_row["time_interval"].item())
+            selected_row = reactive_dp.get().profile.filter(
+                pl.col("segment") == input.row_select()
+            )
+            ui.update_slider("depth", value=selected_row["depth"].item())
+            ui.update_slider("time", value=selected_row["time_interval"].item())
+            ui.update_slider("conso", value=selected_row["conso_per_min"].item())
 
     @reactive.effect
     @reactive.event(input.update_segment)
@@ -117,6 +117,7 @@ def server(input, output, session):
             segment=input.row_select(),
             depth=input.depth(),
             time_interval=input.time(),
+            conso=input.conso(),
         )
         newdp.update_time()
         newdp.update_conso()

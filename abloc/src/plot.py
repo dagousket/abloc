@@ -96,6 +96,7 @@ def format_profile(dp: DiveProfile) -> GT:
             "conso_remaining": [float(dp.volume * dp.pressure)],
             "conso_totale": [0.0],
             "segment": ["Start"],
+            "conso_per_min": [None],
         }
     )
     df = pl.concat([initial_state, dp.profile], how="diagonal_relaxed")
@@ -105,14 +106,34 @@ def format_profile(dp: DiveProfile) -> GT:
         raise ValueError(f"DataFrame must contain columns: {required_columns}")
     table_output = df.with_columns(
         pl.col(required_columns).clip(lower_bound=0).round(0)
-    ).select(["segment", "time_interval", "depth", "bar_remaining", "conso_remaining"])
+    ).select(
+        [
+            "segment",
+            "time_interval",
+            "depth",
+            "bar_remaining",
+            "conso_remaining",
+            "conso_per_min",
+        ]
+    )
     table_output = (
         GT(table_output)
         .tab_header(title="Dive Profile Summary")
+        .cols_move_to_start(
+            columns=[
+                "segment",
+                "time_interval",
+                "depth",
+                "conso_per_min",
+                "conso_remaining",
+                "bar_remaining",
+            ]
+        )
         .cols_label(
             segment=html("<b>Segment</b>"),
             time_interval=html("<b>Time</b> (min)"),
             depth=html("<b>Depth</b> (m)"),
+            conso_per_min=html("<b>Air consumption</b> (L/min)"),
             conso_remaining=html("<b>Air remaining</b> (L)"),
             bar_remaining=html("<b>Pressure remaining</b> (bar)"),
         )
@@ -128,5 +149,6 @@ def format_profile(dp: DiveProfile) -> GT:
             domain=[0, 50 * dp.volume],
             na_color="white",
         )
+        .sub_missing(missing_text="")
     )
     return table_output
