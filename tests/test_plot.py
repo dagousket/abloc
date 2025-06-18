@@ -21,9 +21,10 @@ def test_plot():
     assert isinstance(fig, go.FigureWidget)
     # Test if the figure has the expected number of traces
     data = fig.data
-    assert len(data) == 2
+    assert len(data) == 3
     assert data[0].name == "depth"
     assert data[1].name == "bloc"
+    assert data[2].name == "segment"
     # Test if the x-axis and y-axes titles are set correctly
     assert fig.layout.xaxis.title.text == "<b>Dive time</b> (min)"
     assert fig.layout.yaxis.title.text == "<b>Depth</b> (m)"

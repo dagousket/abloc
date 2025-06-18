@@ -2,6 +2,7 @@ import polars as pl
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from great_tables import GT, html
+from importlib_resources import files
 from .utils import DiveProfile
 
 
@@ -38,6 +39,15 @@ def plot_profile(
     # Record max values for plot range
     max_depth = df.select(pl.max(y1)).item()
     max_bar = df.select(pl.max(y2)).item()
+    mean_depth = df.select(pl.mean(y1)).item()
+
+    # Record middle point for time interval
+    df = df.with_columns(
+        mid_interval=pl.col("time") - 0.5 * pl.col("time_interval"),
+        mid_pressure=pl.col("bar_remaining")
+        + 0.5 * (pl.col("bar_remaining").shift(n=1) - pl.col("bar_remaining"))
+        - 10,
+    )
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
@@ -52,6 +62,19 @@ def plot_profile(
 
     fig.add_trace(
         go.Scatter(x=df[x], y=df[y2], name="bloc", line=dict(color="navy")),
+        secondary_y=True,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=df["mid_interval"],
+            y=df["mid_pressure"],
+            mode="text",
+            name="segment",
+            text=df["segment"],
+            textposition="bottom center",
+            textfont=dict(size=18, color="navy", weight=900),
+        ),
         secondary_y=True,
     )
 
@@ -101,12 +124,23 @@ def format_profile(dp: DiveProfile) -> GT:
     )
     df = pl.concat([initial_state, dp.profile], how="diagonal_relaxed")
 
+    # Assess direction (down-stable-up)
+    df = df.with_columns(
+        pl.when(pl.col("depth") > pl.col("depth").shift(1))
+        .then(pl.lit("down"))
+        .when(pl.col("depth") < pl.col("depth").shift(1))
+        .then(pl.lit("up"))
+        .otherwise(pl.lit("stable"))
+        .alias("direction")
+    )
+
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
     table_output = df.with_columns(
         pl.col(required_columns).clip(lower_bound=0).round(0)
     ).select(
         [
             "segment",
+            "direction",
             "time_interval",
             "depth",
             "bar_remaining",
@@ -120,6 +154,7 @@ def format_profile(dp: DiveProfile) -> GT:
         .cols_move_to_start(
             columns=[
                 "segment",
+                "direction",
                 "time_interval",
                 "depth",
                 "conso_per_min",
@@ -129,11 +164,17 @@ def format_profile(dp: DiveProfile) -> GT:
         )
         .cols_label(
             segment=html("<b>Segment</b>"),
+            direction=html("<b>Direction</b>"),
             time_interval=html("<b>Time</b> (min)"),
             depth=html("<b>Depth</b> (m)"),
             conso_per_min=html("<b>Air consumption</b> (L/min)"),
             conso_remaining=html("<b>Air remaining</b> (L)"),
             bar_remaining=html("<b>Pressure remaining</b> (bar)"),
+        )
+        .fmt_image(
+            columns="direction",
+            path=files("abloc") / "src/img",
+            file_pattern="logo-diver-{}.svg",
         )
         .data_color(
             columns=["bar_remaining"],
