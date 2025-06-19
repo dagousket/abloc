@@ -63,9 +63,9 @@ def server(input, output, session):
 
     # create a basic initial dive profile and set up reactivity
     dp = DiveProfile(
-        time=[5.0, 20.0, 10.0],
-        depth=[20.0, 20.0, 0.0],
-        conso=[20, 20, 20],
+        time=[3.0, 20.0, 3.0, 3.0, 1.0],
+        depth=[20.0, 20.0, 3.0, 3.0, 0.0],
+        conso=[20, 20, 20, 20, 20],
         volume=12,
         pressure=200,
     )

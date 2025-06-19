@@ -134,7 +134,10 @@ def format_profile(dp: DiveProfile) -> GT:
         .when(pl.col("depth") < pl.col("depth").shift(1))
         .then(pl.lit("up"))
         .otherwise(pl.lit("stable"))
-        .alias("direction")
+        .alias("direction"),
+        speed=(
+            (pl.col("depth").shift(1) - pl.col("depth")) / pl.col("time_interval")
+        ).round(2),
     )
 
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
@@ -144,6 +147,7 @@ def format_profile(dp: DiveProfile) -> GT:
         [
             "segment",
             "direction",
+            "speed",
             "time_interval",
             "depth",
             "bar_remaining",
@@ -158,6 +162,7 @@ def format_profile(dp: DiveProfile) -> GT:
             columns=[
                 "segment",
                 "direction",
+                "speed",
                 "time_interval",
                 "depth",
                 "conso_per_min",
@@ -168,6 +173,7 @@ def format_profile(dp: DiveProfile) -> GT:
         .cols_label(
             segment=html("<b>Segment</b>"),
             direction=html("<b>Direction</b>"),
+            speed=html("<b>Speed</b> (m/min)"),
             time_interval=html("<b>Time</b> (min)"),
             depth=html("<b>Depth</b> (m)"),
             conso_per_min=html("<b>Air consumption</b> (L/min)"),
@@ -189,6 +195,12 @@ def format_profile(dp: DiveProfile) -> GT:
             columns=["conso_remaining"],
             palette=["firebrick", "lightcoral"],
             domain=[0, 50 * dp.volume],
+            na_color="white",
+        )
+        .data_color(
+            columns=["speed"],
+            palette=["firebrick", "lightcoral"],
+            domain=[10, 30],
             na_color="white",
         )
         .sub_missing(missing_text="")
