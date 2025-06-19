@@ -38,6 +38,14 @@ app_ui = ui.page_sidebar(
                 "Update Segment",
                 icon=ui.tags.i(class_="fa-solid fa-wand-magic-sparkles"),
             ),
+            ui.panel_conditional(
+                "input.row_select != 'new segment'",
+                ui.input_action_button(
+                    "delete_segment",
+                    "Delete Segment",
+                    icon=ui.tags.i(class_="fa-solid fa-eraser"),
+                ),
+            ),
         ),
     ),
     output_widget("profile_plot"),
@@ -119,6 +127,19 @@ def server(input, output, session):
             time_interval=input.time(),
             conso=input.conso(),
         )
+        newdp.update_time()
+        newdp.update_conso()
+        segment_list.set(newdp.profile["segment"].to_list())
+        reactive_dp.set(newdp)
+
+    @reactive.effect
+    @reactive.event(input.delete_segment)
+    def _():
+        req(input.row_select())
+        if input.row_select() == "new segment":
+            return
+        newdp = copy(reactive_dp.get())
+        newdp.delete_segment(input.row_select())
         newdp.update_time()
         newdp.update_conso()
         segment_list.set(newdp.profile["segment"].to_list())

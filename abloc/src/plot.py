@@ -54,14 +54,14 @@ def plot_profile(
 
     # Add traces
     fig.add_trace(
-        go.Scatter(x=df[x], y=df[y1], name="depth", line=dict(color="navy")),
+        go.Scatter(x=df[x], y=df[y1], name="Depth", line=dict(color="navy")),
         secondary_y=False,
     )
 
     fig.update_traces(fill="tozeroy", line_color="rgba(0,100,80,0.2)")
 
     fig.add_trace(
-        go.Scatter(x=df[x], y=df[y2], name="bloc", line=dict(color="navy")),
+        go.Scatter(x=df[x], y=df[y2], name="Bloc pressure", line=dict(color="navy")),
         secondary_y=True,
     )
 
@@ -70,7 +70,7 @@ def plot_profile(
             x=df["mid_interval"],
             y=df["mid_pressure"],
             mode="text",
-            name="segment",
+            name="Segment",
             text=df["segment"],
             textposition="bottom center",
             textfont=dict(size=18, color="navy", weight=900),
@@ -79,7 +79,10 @@ def plot_profile(
     )
 
     # Add figure title
-    fig.update_layout(title_text="Dive Profile", template="plotly_white")
+    fig.update_layout(
+        title=dict(text="Dive Profile", font=dict(size=20, weight=900)),
+        template="plotly_white",
+    )
 
     # Set x-axis title
     fig.update_xaxes(title_text="<b>Dive time</b> (min)")

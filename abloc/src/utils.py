@@ -79,6 +79,23 @@ class DiveProfile:
             self.profile, segment, time_interval, depth, conso
         )
 
+    def delete_segment(self, segment: str) -> None:
+        """
+        Delete a specific segment from the dive profile.
+        Parameters:
+        - segment: Segment label to delete.
+        Returns:
+        - None : Remove the specified segment from the profile.
+        """
+        if segment in self.profile["segment"].to_list():
+            self.profile = self.profile.filter(
+                pl.col("segment") != segment
+            ).with_columns(
+                segment=pl.Series(list(ascii_uppercase[: len(self.profile) - 1]))
+            )
+        else:
+            raise ValueError(f"Segment {segment} does not exist in the profile.")
+
 
 def compute_conso_from_profile(df: pl.DataFrame) -> pl.DataFrame:
     """
