@@ -20,13 +20,13 @@
   },
   "files": {
     "requirements.txt": {
-      "checksum": "9ba2c280624f3de704c122ccc5fcaa62"
+      "checksum": "33768a7e614fdb3249f75f2bbb4d7439"
     },
     ".bumpversion.toml": {
       "checksum": "16cb9e5de362f70897c096d978cf96a8"
     },
     ".github/workflows/deploy.yml": {
-      "checksum": "0c08e0b1f3d7b0e71ddffd139d3dea46"
+      "checksum": "54cd7177719f46d3c9262d0aac041a40"
     },
     ".github/workflows/lint_and_req.yml": {
       "checksum": "99c16780899a0a8bc70816788efc89ac"
@@ -46,14 +46,23 @@
     "VERSION": {
       "checksum": "335e29d8085b1816c6304031b6a592af"
     },
+    "abloc/src/img/logo-diver-down.svg": {
+      "checksum": "f3aee2242b1ff7cfd0cbe7fb26c661c3"
+    },
+    "abloc/src/img/logo-diver-stable.svg": {
+      "checksum": "47934d80096018725714e03110cdc5d0"
+    },
+    "abloc/src/img/logo-diver-up.svg": {
+      "checksum": "1fbc206d026f08d3ef9fa5a42b7ac34c"
+    },
     "abloc/src/plot.py": {
-      "checksum": "39d82a84120565f65c82e2df8cfb294e"
+      "checksum": "69f81fd6176a77318d0f7d266f644a09"
     },
     "abloc/src/utils.py": {
-      "checksum": "9e000e991f9ec40b791679848f43cad9"
+      "checksum": "c1354963e4a1d87167c8869cf134eec7"
     },
     "app.py": {
-      "checksum": "90c978ac28eda7f05fe1779875014a9d"
+      "checksum": "a680962177b02c42ef7ac36267cd399d"
     },
     "css/styles.css": {
       "checksum": "67b43094cfad8ece0f65272419dc4ec3"
@@ -65,19 +74,19 @@
       "checksum": "3d5f00114c2380be69a4e88c5ca3b269"
     },
     "pyproject.toml": {
-      "checksum": "00f604988cd16a70dcf40ec776faa1ca"
+      "checksum": "55f8eb5b6d2f281dd44591a5a4cda5ad"
     },
     "tests/__init__.py": {
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     "tests/test_plot.py": {
-      "checksum": "6befd647c3f9ea4f4bd1d349686c7acb"
+      "checksum": "b594e7f6dd39a3198dad9ecebde79322"
     },
     "tests/test_utils.py": {
-      "checksum": "c7cf5f829b046450a53c565d5f76d4c1"
+      "checksum": "06dd0f99aa43ff614a2d299f88f6d4d5"
     },
     "uv.lock": {
-      "checksum": "3b3fabcf66e1dfdba2586b9170ffe04b"
+      "checksum": "fef457356e93fa18edf723eeb467cb0d"
     }
   }
 }
