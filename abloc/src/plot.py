@@ -54,14 +54,14 @@ def plot_profile(
 
     # Add traces
     fig.add_trace(
-        go.Scatter(x=df[x], y=df[y1], name="depth", line=dict(color="navy")),
+        go.Scatter(x=df[x], y=df[y1], name="Depth", line=dict(color="navy")),
         secondary_y=False,
     )
 
     fig.update_traces(fill="tozeroy", line_color="rgba(0,100,80,0.2)")
 
     fig.add_trace(
-        go.Scatter(x=df[x], y=df[y2], name="bloc", line=dict(color="navy")),
+        go.Scatter(x=df[x], y=df[y2], name="Bloc pressure", line=dict(color="navy")),
         secondary_y=True,
     )
 
@@ -70,7 +70,7 @@ def plot_profile(
             x=df["mid_interval"],
             y=df["mid_pressure"],
             mode="text",
-            name="segment",
+            name="Segment",
             text=df["segment"],
             textposition="bottom center",
             textfont=dict(size=18, color="navy", weight=900),
@@ -79,7 +79,10 @@ def plot_profile(
     )
 
     # Add figure title
-    fig.update_layout(title_text="Dive Profile", template="plotly_white")
+    fig.update_layout(
+        title=dict(text="Dive Profile", font=dict(size=20, weight=900)),
+        template="plotly_white",
+    )
 
     # Set x-axis title
     fig.update_xaxes(title_text="<b>Dive time</b> (min)")
@@ -131,7 +134,10 @@ def format_profile(dp: DiveProfile) -> GT:
         .when(pl.col("depth") < pl.col("depth").shift(1))
         .then(pl.lit("up"))
         .otherwise(pl.lit("stable"))
-        .alias("direction")
+        .alias("direction"),
+        speed=(
+            (pl.col("depth").shift(1) - pl.col("depth")) / pl.col("time_interval")
+        ).round(2),
     )
 
     required_columns = {"conso_totale", "conso_remaining", "bar_remaining"}
@@ -141,6 +147,7 @@ def format_profile(dp: DiveProfile) -> GT:
         [
             "segment",
             "direction",
+            "speed",
             "time_interval",
             "depth",
             "bar_remaining",
@@ -155,6 +162,7 @@ def format_profile(dp: DiveProfile) -> GT:
             columns=[
                 "segment",
                 "direction",
+                "speed",
                 "time_interval",
                 "depth",
                 "conso_per_min",
@@ -165,6 +173,7 @@ def format_profile(dp: DiveProfile) -> GT:
         .cols_label(
             segment=html("<b>Segment</b>"),
             direction=html("<b>Direction</b>"),
+            speed=html("<b>Speed</b> (m/min)"),
             time_interval=html("<b>Time</b> (min)"),
             depth=html("<b>Depth</b> (m)"),
             conso_per_min=html("<b>Air consumption</b> (L/min)"),
@@ -186,6 +195,12 @@ def format_profile(dp: DiveProfile) -> GT:
             columns=["conso_remaining"],
             palette=["firebrick", "lightcoral"],
             domain=[0, 50 * dp.volume],
+            na_color="white",
+        )
+        .data_color(
+            columns=["speed"],
+            palette=["firebrick", "lightcoral"],
+            domain=[10, 30],
             na_color="white",
         )
         .sub_missing(missing_text="")

@@ -92,6 +92,18 @@ def test_update_segment():
     ), "New B segment is correct"
 
 
+def test_delete_segment():
+    dp = utils.DiveProfile(
+        time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20], volume=12, pressure=200
+    )
+    assert dp.profile.shape == (3, 5), "Initial profile has 3 rows"
+    dp.delete_segment(segment="B")
+    assert "B" in dp.profile["segment"].to_list(), "B segment is reassign"
+    assert dp.profile.shape == (2, 5), "Profile has 2 rows after deletion"
+    with pytest.raises(ValueError):
+        dp.delete_segment(segment="D")
+
+
 def test_format_profile():
     dp = utils.DiveProfile(
         time=[5, 20, 10], depth=[20, 20, 0], conso=[20, 20, 20], volume=12, pressure=200

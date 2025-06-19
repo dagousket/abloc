@@ -22,9 +22,9 @@ def test_plot():
     # Test if the figure has the expected number of traces
     data = fig.data
     assert len(data) == 3
-    assert data[0].name == "depth"
-    assert data[1].name == "bloc"
-    assert data[2].name == "segment"
+    assert data[0].name == "Depth"
+    assert data[1].name == "Bloc pressure"
+    assert data[2].name == "Segment"
     # Test if the x-axis and y-axes titles are set correctly
     assert fig.layout.xaxis.title.text == "<b>Dive time</b> (min)"
     assert fig.layout.yaxis.title.text == "<b>Depth</b> (m)"
